@@ -17,12 +17,19 @@ EXTRA_OECMAKE:append:cuda = ' -DOPENCV_CUDA_DETECTION_NVCC_FLAGS="-ccbin ${CUDAH
 SRC_URI:append:cuda = " \
     file://0001-Fix-search-paths-in-FindCUDNN.cmake.patch \
     file://0002-Fix-broken-override-of-CUDA_TOOLKIT_TARGET_DIR-setti.patch \
+    file://0001-Workaround-for-CUDA-12.6-tuple_size-issue-3773.patch;patchdir=contrib \
 "
 
 OPTICALFLOW_MD5 = "a73cd48b18dcc0cc8933b30796074191"
 OPTICALFLOW_HASH = "edb50da3cf849840d680249aa6dbef248ebce2ca"
 
-SRC_URI:append:cuda = " https://github.com/NVIDIA/NVIDIAOpticalFlowSDK/archive/${OPTICALFLOW_HASH}.zip;name=opticalflow;unpack=false;subdir=${OPENCV_DLDIR}/nvidia_optical_flow;downloadfilename=${OPTICALFLOW_MD5}-${OPTICALFLOW_HASH}.zip"
+SRC_URI:append:cuda = " https://github.com/NVIDIA/NVIDIAOpticalFlowSDK/archive/${OPTICALFLOW_HASH}.zip;name=opticalflow;unpack=false;downloadfilename=${OPTICALFLOW_MD5}-${OPTICALFLOW_HASH}.zip"
+
+do_unpack_extra:append:cuda() {
+    mkdir -p ${OPENCV_DLDIR}/nvidia_optical_flow
+    ln -sf ${WORKDIR}/${OPTICALFLOW_MD5}-${OPTICALFLOW_HASH}.zip ${OPENCV_DLDIR}/nvidia_optical_flow/
+}
+
 
 SRC_URI[opticalflow.md5sum] = "${OPTICALFLOW_MD5}"
 SRC_URI[opticalflow.sha256sum] = "e300c02e4900741700b2b857965d2589f803390849e1e2022732e02f4ae9be44"
